@@ -1,0 +1,7 @@
+---
+title: 全局样式和CSS模块
+vid: 70e706ed45c271f0bfc74531959c0102
+
+---
+本节 Next.js 中的 CSS 模块（CSS Modules），用于为页面或组件定义局部作用域的样式，避免样式冲突。CSS 模块文件需以 `.module.css` 结尾，如为 ProductCard 组件创建 `productCard.module.css`，定义类（如 `.card`）并设置样式（如 `padding` 和 `border`）。在组件中通过 `import styles from './productCard.module.css'` 导入，`styles` 是一个 JavaScript 对象，类名作为其属性，需使用驼峰命名法（如 `cardContainer`）而非连字符。组件中使用 `className={styles.card}` 应用样式。Next.js 使用 PostCSS（配置文件为 `postcss.config.js`，包含 Tailwind 和 Autoprefixer 插件）转换类名，生成唯一类名以防冲突。浏览器检查元素显示的类名是自动生成的。CSS 和 TSX 文件可放在同一文件夹，或为组件创建单独文件夹（如 `productCard`）包含 `.tsx` 和 `.module.css` 文件，同样适用于页面样式。
+

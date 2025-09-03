@@ -1,0 +1,97 @@
+---
+title: 从 GitHub 拉取更新
+videoUrl: /template.mp4
+
+---
+
+从 GitHub 拉取更新实际上包含两个步骤：
+
+git fetch: 从远程获取最新代码
+git merge: 将获取的代码合并到本地
+
+## 二、基本拉取操作
+1. 直接拉取并合并
+```bash
+# 拉取并自动合并远程更改
+git pull
+# 指定远程仓库和分支
+git pull origin main
+ ```
+
+2. 分步操作
+```bash
+# 1. 先获取远程更新
+git fetch origin
+# 2. 查看更新内容
+git log origin/main
+# 3. 合并更新
+git merge origin/main
+
+ ```
+## 三、常见场景
+1. 拉取前检查本地状态
+```bash
+# 查看工作区状态
+git status
+# 如有未提交的更改，先提交或暂存
+git add .
+git commit -m "保存本地更改"
+
+ ```
+2. 处理冲突
+```bash
+# 如果拉取时发生冲突
+git status  # 查看冲突文件
+# 解决冲突后
+git add .
+git commit -m "解决冲突"
+
+ ```
+3. 放弃本地更改并更新
+```bash
+# 谨慎使用！这会丢失所有本地更改
+git fetch origin
+git reset --hard origin/main
+
+ ```
+## 四、进阶操作
+1. 拉取特定分支
+```bash
+# 切换到目标分支
+git switch 
+feature-branch
+# 拉取更新
+git pull origin feature-branch
+
+ ```
+2. 查看远程分支
+```bash
+# 列出所有远程分支
+git branch -r
+# 查看所有分支（本地和远程）
+git branch -a
+
+ ```
+3. 更新远程分支信息
+```bash
+# 更新远程分支信息
+git remote update
+
+ ```
+##五、最佳实践
+养成好习惯
+
+开始工作前先拉取更新
+提交代码前先拉取更新
+定期拉取更新保持代码同步
+安全建议
+
+拉取前先提交或暂存本地更改
+重要更改先备份
+遇到冲突时仔细检查
+提高效率
+
+使用 git pull --rebase 保持提交历史整洁
+善用 git fetch 和 git merge 分步操作
+遇到问题及时与团队沟通
+这样，你就可以安全有效地从 GitHub 获取最新的代码更新了。记住，保持代码同步是团队协作的重要一环。

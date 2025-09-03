@@ -1,0 +1,7 @@
+---
+title: 路由和导航
+vid: b02942bc45c271f0bfee6733a78e0102
+
+---
+本节聊聊 Next.js 中基于文件系统的路由机制。在 app 文件夹下创建 users 文件夹，并添加 page.tsx 文件（需小写，遵循 Next.js 约定），即可定义 /users 路由。使用 VS Code 扩展通过 rafce 快捷生成 React 组件，命名为 UsersPage。路由系统基于约定而非配置，文件夹中的非 page 文件（如 test.css）不会公开访问，与旧 Pages Router 不同。支持嵌套路由，如在 users 下创建 new 文件夹和 page.tsx，生成 /users/new 路由。导航方面，首页通过 &lt;a&gt; 标签链接到 /users，但会导致重复加载资源（如字体、CSS、JS）。推荐使用 Next.js 的 Link 组件（从 next/link 导入）实现客户端导航，仅加载页面内容，避免重复下载资源，提升性能。课程后续将深入探讨导航相关内容。
+

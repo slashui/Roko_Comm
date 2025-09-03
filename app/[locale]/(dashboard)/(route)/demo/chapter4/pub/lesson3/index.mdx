@@ -1,0 +1,96 @@
+---
+title: Git 工作流程
+videoUrl: /template.mp4
+
+---
+
+## 1. 初始设置
+```bash
+# 将本地仓库与远程仓库关联
+git remote add origin git@github.com:你的用户名/仓库名.git
+
+# 验证远程仓库配置
+git remote -v
+ ```
+
+## 2. 首次推送
+```bash
+# 确保分支名称与远程一致（通常是 main）
+git push -u origin main
+ ```
+
+## 3. 日常工作流程
+### 3.1 查看仓库状态
+```bash
+# 查看当前仓库状态
+git status
+
+# 查看具体更改内容
+git diff
+ ```
+
+### 3.2 添加更改
+```bash
+# 方法1：添加指定文件
+git add 文件名
+
+# 方法2：快捷方式，添加所有更新过的文件
+git add -u
+ ```
+
+### 3.3 提交更改
+```bash
+# 提交更改并添加提交信息
+git commit -m "提交说明"
+ ```
+
+### 3.4 推送到远程
+```bash
+# 首次设置过追踪分支后，可以直接使用
+git push
+ ```
+
+### 3.5 获取远程更新
+```bash
+# 拉取远程更改
+git pull
+
+# 查看提交历史
+git log
+ ```
+
+## 4. 实际案例
+以下是一个完整的工作流程示例：
+
+1. 修改了 banana.py 文件
+2. 检查状态：
+```bash
+git status
+ ```
+
+3. 查看具体更改：
+```bash
+git diff
+ ```
+
+4. 添加更改：
+```bash
+git add -u
+ ```
+
+5. 提交更改：
+```bash
+git commit -m "add another banana"
+ ```
+
+6. 推送到远程：
+```bash
+git push
+ ```
+
+注意事项：
+
+- 可以根据需要多次执行这些操作
+- 可以在本地进行多次修改和提交，然后一次性推送
+- 也可以每次修改后立即推送
+- 具体工作流程可以根据个人喜好和项目需求来调整

@@ -1,0 +1,7 @@
+---
+title: 项目结构
+vid: 00d813ba45c271f0bfcc5017f0f80102
+
+---
+本节介绍 Next.js 项目的关键文件和文件夹结构。核心是 app 文件夹（即 App Router），采用基于文件系统的路由，无需像 React Router 那样配置路由，直接通过创建文件和文件夹定义路由。app 文件夹包含：1) favicon.ico（网站图标）；2) global.css（全局样式文件）；3) layout.tsx（定义 HTML 和 body 的布局组件，动态渲染页面内容）；4) page.tsx（首页文件）。演示中将 page.tsx 内容替换为简单的 <main><h1>Hello World</h1></main>，并通过修改 global.css 移除 body 的线性渐变背景并添加 1rem 填充，解决样式问题，展示 Next.js 的快速刷新功能。项目根目录还有 public 文件夹存放静态资源（如 SVG 图像），以及 ESLint、Next.js、PostCSS、Tailwind CSS 和 TypeScript 的配置文件，通常无需修改，除非未来有特定需求。
+

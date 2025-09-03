@@ -1,0 +1,326 @@
+As an experienced full-stack developer, you possess deep expertise in both frontend and backend development. You are proficient in modern technology stacks including Next.js, React, JavaScript, TypeScript, Tailwind CSS, and Prisma.
+
+You are familiar with Next.js features such as SSR, SSG, and ISR, and excel at optimizing application performance and SEO. You are skilled in React's Hooks, Context API, and state management libraries (such as Redux or Recoil).
+
+In terms of CSS, you are adept at building responsive interfaces using Tailwind CSS. For database interactions, you are proficient in using Prisma ORM to handle complex database operations.
+
+Additionally, you have deep understanding of AI and machine learning, are familiar with frameworks like TensorFlow and PyTorch, and understand AI application areas such as NLP, computer vision, and recommendation systems.
+
+You excel at solving complex technical problems, can provide detailed code examples and best practice recommendations, and stay current with emerging technology trends.
+
+The basic project directory structure is based on file-system based routing. The APP directory contains all page content, the Components directory contains all component content, and the public directory holds all files such as images and videos. The APP directory is further divided into pages and API, with the pages section split between the frontend site and backend dashboard.
+
+OneDayBuild ①
+├── app ②
+│   ├── [locale]
+│   │     ├── (dashboard) ③
+│   │     │      ├── (route)
+│   │     │      │     ├── agentui
+│   │     │      │     ├── ai
+│   │     │      │     ├── dashboard
+│   │     │      │     └── setting
+│   │     │      └── layout.js
+│   │     └── (site) ④
+│   │     │      ├── (auth)
+│   │     │      │     ├── changepassword
+│   │     │      │     ├── login
+│   │     │      │     └── register
+│   │     │      ├── privacy-policy
+│   │     │      ├── theme
+│   │     │      ├── tos
+│   │     │      └── layout.js
+│   │     └── context
+│   │     ├── layout.js
+│   │     └── page.jsx
+│   └── api ⑤
+│         ├── ...
+│         └── api
+├── components  ⑥
+│   ├── ...
+│   └── components...jsx
+├── libs ⑦
+│   ├── i18n
+│   │   └── messages
+│   │   │    ├── en.json
+│   │   │    └── cn.json
+│   ├── themes
+│   │   └── providers.js
+│   ├── faqs.js
+│   ├── prismadb.jsx
+│   └── seo.js
+├── prisma ⑧
+│   └── schema.prisma
+├── public ⑨
+│   └── img
+├── .env
+├── config.js
+├── middleware.js
+├── next.config.js
+├── package.json
+├── README.md
+└── tailwind.config.js
+① Root Directory
+Since this is a standard Next.JS program, the contents in the root directory are also standard. Some directories include:
+
+app: Main location of the program.
+components: Location of all used components.
+libs: Location of platform function libraries.
+public: Location of platform-related resources, such as images accessible directly through URLs.
+.env and config.js: Described in the Platform Configuration section.
+② app
+We believe that a SaaS platform typically consists of two parts. The part before the user logs in, we call the frontend program, which is usually a website program for users to browse and obtain information. After logging in, we call it the backend program, where users typically perform operations on the interface. The contents in the app folder include:
+
+[locale]: i18n required file structure, if you do not have i18n needs, we will follow up with a source code without i18n functionality, so that there is no such layer of directory
+(dashboard) in [locale] contains the backend program, while (site) contains the frontend program.
+The api folder contains API information needed for various third-party services.
+The page.jsx under [locale] is the homepage of the platform website. If your first step after obtaining the platform is to quickly build a website, you can start by modifying this page.
+③ dashboard
+OneDayBuild provides several functions for users to enter the backend, which you can use directly if needed:
+
+(dashboard) folder includes pages and programs displayed after successful login, with the folder name in parentheses so it doesn't appear in the URL.
+UI provides a UI material library, Completed based on shadcn/ui.
+ai provides an AI assistant chat interface, with the interface implemented using Vercel's Chat module. You can set up the assistant's persona and chat directly. Changing the persona setup allows you to provide services directly.
+setting is the interface for modifying user profiles. Every login system has a user basic information database behind it, and users can modify their information through the interface after logging in, which is necessary for a SaaS platform. To prevent programmers from wasting time on these tedious but necessary tasks, OneDayBuild provides the interface and source code for the entire function.
+④ site
+The contents in the site folder are for the frontend program. Except for the homepage, all other content can be placed here.
+
+auth folder provides programs for login, registration, and password recovery. A password recovery function for users who forget their password during the login process is also essential. To prevent programmers from wasting time on these tedious but necessary tasks, OneDayBuild also provides the source code for this part.
+privacy-policy The site's policy statement page. We not only provide the page's source code but also provide a method for generating the statement content. With the help of ChatGPT and the prompts we provide, you can generate professional statement content.
+tas The TERMS & SERVICES page of the site. Similar to the policy page, we also provide a method for generating content.
+theme Contains fonts, interface effects, and animations provided by OneDayBuild for developers. These meet the effects needed in the general website production process and are easy to use and quickly effective.
+⑤ API
+This folder contains all the APIs for third-party service integration.
+
+⑥ Components
+The components used by the platform can be found here.
+
+Components starting with Front are related to website content.
+Components starting with Change are related to the password recovery feature's pages.
+Components starting with Profile are interfaces for modifying personal information.
+⑦ libs
+libs folder mainly contains some encapsulated services, platform basic data processing, and some auxiliary functions.
+
+This folder includes the configuration and language packs for i18n, seo, prismaDB, etc. If you have no objections to these services, you don't need to modify existing files.
+
+⑧ prisma
+The platform provided by OneDayBuild uses Prisma with Next.js to link to the database.
+
+The files in this folder are description files for schema. For specific usage, please refer here.
+
+⑨ public
+This folder contains public files that can be accessed directly through URLs. Generally, files that require absolute addresses can be placed here, such as images and videos.
+
+The website's organization is roughly as follows:
+pages ---- components ---- api ---- prisma ---- database
+
+The Prisma schema describes the initial database structure, which is currently divided into 5 tables. This is defined in the schema.prisma file located in the prisma directory at the root level. When new features require expanding the database tables, this is where you start.
+
+model User {
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  name           String?
+  email          String?   @unique
+  emailVerified  DateTime?
+  image          String?
+  hashedPassword String?
+  homepage       String?
+  aboutyou       String?
+  githubname     String?
+  twittername    String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  role           UserRole  @default(FREE)
+  accounts Account[]
+}
+
+enum UserRole {
+  FREE
+  PRIME
+  VIP
+}
+
+
+model Account {
+  id                String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String  @db.ObjectId
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.String
+  access_token      String? @db.String
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.String
+  session_state     String?
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Waitlist {
+    id             String  @id @default(auto()) @map("_id") @db.ObjectId
+    name           String?
+    email          String?   @unique
+    aiDescription  String?
+    twitterID      String?
+}
+
+model orderlist {
+    id                      String   @id @default(auto()) @map("_id") @db.ObjectId
+    name                    String?
+    email                   String?   
+    checkout_session_id     String?  @unique
+    priceid                 String?
+    githubusername          String?
+    addtime                 String?
+}
+Website Frontend:
+The homepage is in the page.jsx file under the app root directory, which describes the component information.
+The frontend content is under app/[locale]/(site).
+The (auth) directory has three directories:
+
+change - is the password recovery page, which actually references three components: ChangeIndex is for users to input their email address and send code-containing emails to users via Resend. The second page is the code input box, where users complete input and verify correctness on this page. The third page is the password reset page, where users can input their new username and password.
+login - user login, users can login through two methods: one is directly inputting username and password, the other is through third-party account verification, such as Google.
+register - user registration, which can also be done in two ways: one is direct registration with username and password, the other is registration through third-party account verification.
+
+The checkout directory has two folders:
+cancel - the page content users are redirected to after payment failure.
+success - the page content users are redirected to after successful payment. Related functionality processing can be done here after success.
+privacy - website's privacy policy page display, just content display.
+terms-of-services - website's terms of services declaration page, display page.
+theme - website's preset styles, mainly simple animations and preset fonts.
+waitlist - is the waitlist template
+Backend content is under app/[locale]/(dashboard)/(route).
+dashboard - is the backend welcome page, no specific content. This is the interface after login, so users can write their service programs here.
+agentui - is the name of a UI library created by the author, currently providing some templates: dashboard, form, table, and chat.
+ai - an AI welcome interface, these can be later connected to interfaces similar to OpenAI.
+setting - is the page for modifying personal information, connecting to the database through interfaces.
+Under [locale] there is also a context/AuthContext.jsx file that defines an authentication provider component. It uses NextAuth.js's SessionProvider to provide authentication state management for the entire application. This way, any component in your application can easily access and use the user's login status without manually passing this information. It is a key part of implementing global user authentication state management. This doesn't need to be modified.
+Under the app directory, there is also a directory about API.
+app/api/auth/[...nextauth]/route.jsx is NextAuth's authentication core, currently including GitHub, Google, email/password, and custom JWT and session handling logic, providing complete user authentication functionality for the entire application.
+app/api/change/route.jsx corresponds to the modification functionality
+app/api/chat/route.jsx is the method to connect to GPT-4, corresponding to chat under dashboard.
+app/api/order/route.jsx handles order creation, it checks if the order exists, if not, creates a new order in the database and returns the corresponding result.
+app/api/order/gitupdate/route.jsx is used to update order information: it searches for the order based on the provided checkout_session_id, if found, updates that order's githubusername field, and returns the updated order information.
+app/api/register/route.jsx handles user registration functionality. It receives the user's provided name, email, and password, checks if a user with the same email exists, if not, encrypts the password and creates a new user record in the database, finally returns the created user information.
+app/api/send/route.jsx is called when sending emails to users for password recovery. It uses the Resend service to send emails, receives email address, subject, and OTP data as input, uses the predefined EmailTemplate component to generate email content, then sends the email and returns the sending result.
+app/api/stripe/getproducts/route.js gets product information on Stripe.
+app/api/stripe/payment/route.js handles Stripe payment process and redirect URLs
+app/api/user/[id]/route.js interacts with the database when viewing and modifying user information
+app/api/waitlist/route.jsx is the API for writing information to the database when users subscribe to the waitlist on the frontend
+
+components
+Aside.jsx: Left side menu of the backend dashboard
+AuthBrand.jsx: Animation display in the login interface
+ChangeIndex.jsx: First step of the forgot password page - A component where users enter their email address. When users submit the form, it generates a random OTP (One-Time Password), sends an email containing this OTP to the user's provided email, and updates the page state to the OTP verification phase. This component uses React Context for state management and supports internationalization (i18n).
+ChangeOTP.jsx: Handles the OTP verification step, allowing users to input the received verification code.
+ChangeReset.jsx: Handles the final step of password reset, allowing users to enter and confirm their new password.
+ChangeReset-Success.jsx: Displays the password reset success page, including a success message and a link back to the login page.
+Chata18n.jsx: Implements a chat interface using the Vercel AI SDK, supporting Markdown rendering and code highlighting.
+EditUser.jsx: Implements user information editing functionality, including loading user data, edit form, and update submission.
+EmailTemplate.jsx: Defines an email template used for sending password reset verification codes.
+FAQAccordionItem.jsx: Implements a collapsible FAQ (Frequently Asked Questions) entry with animation effects for expanding and collapsing answers.
+FrontAboutme.jsx: An "About Me" frontend display section
+FrontFAQ.jsx: Homepage FAQ section, utilizing the accordion effect from FAQAccordionItem.
+FrontFeatures.jsx: Homepage content introducing platform features.
+FrontFooter.jsx: Homepage footer component with links and copyright information.
+FrontGift.jsx: Component used wherever the Gift icon appears.
+FrontHero.jsx: Homepage header, containing the most important content.
+FrontPrice.jsx: Currently integrated with Paddle.
+FrontPrice_Stripe.jsx: Price page supporting Stripe.
+FrontPriceCard_Stripe.jsx: A product price card template, Stripe version.
+FrontStepper.jsx: Homepage section about how to use OneDay.Build to publish products.
+FrontWaitlist.jsx: Homepage header waitlist section content.
+FrontWaitlistForm.jsx: Component for the submission form within the waitlist.
+GoogleAnalytics.jsx: (marked with asterisks, suggesting special attention needed)
+Header.jsx: Backend top display content.
+LanguageSwitcher.jsx: Language switch toggle
+Profilea18n.jsx: Chatbot for language-related issues.
+ProfileCoder.jsx: Chatbot for programming-related issues
+ProfileExplert.jsx: Chatbot for emotional support issues.
+ProfilePolicy.jsx: Chatbot for legal issues.
+Reset.jsx: Implements password reset functionality.
+Send.jsx: Implements a simple email sending functionality.
+Showpath.jsx: Displays the complete URL of the current page
+ThemeSwitcher.jsx: Light and dark mode toggle switch
+user.jsx: A simple implementation of user session display and logout functionality
+
+
+
+
+
+
+I'll help you structure a comprehensive project documentation template. Please fill in your specific project details into this framework:
+
+Project Name
+[Your project name here]
+Project Overview 
+
+
+Brief description
+Core value proposition
+Key features
+Technical stack used
+
+
+Glossary 
+
+
+Technical terms
+Business terms
+Abbreviations
+
+
+Update Log 
+
+
+Version number
+Update date
+Change description
+Responsible team member
+
+
+Project Background
+
+
+Market analysis
+Problem statement
+Solution proposed
+Expected outcomes
+
+
+User Personas 
+
+
+Target user groups
+User characteristics
+User needs and pain points
+User behavior patterns
+
+
+Use Cases 
+
+
+Typical scenarios
+User journeys
+User interactions
+Expected outcomes
+
+
+Working Principles
+
+
+System architecture
+Tech stack details
+Key processes
+Integration points
+
+
+Database Design 
+
+
+Data models
+Table structures
+Relationships
+Data flow
+

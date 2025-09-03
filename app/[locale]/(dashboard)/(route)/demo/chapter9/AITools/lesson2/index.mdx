@@ -1,0 +1,35 @@
+---
+title: HuggingFace 入门（二），利用AI模型快速搭建APP。
+vid: 602fc6ce1c0e71f0bfcc6733a68f0102
+
+---
+## 课程目标
+- 学习如何利用 Hugging Face 和其他工具构建一个完整的 AI 应用
+- 实现一个图片转故事并配音的应用示例
+- 掌握多个 AI 模型串联使用的方法
+
+## 核心知识点
+- 应用架构设计
+  - 图片转文字 (Image to Text)
+  - 文字生成故事 (使用 OpenAI GPT)
+  - 文字转语音 (Text to Speech)
+- 技术实现步骤
+  - 使用 Transformers 库实现图片识别
+  - 调用 OpenAI API 生成故事
+  - 使用 Hugging Face 的 Text-to-Speech 模型生成语音
+- 工具链使用
+  - LangChain 用于串联多个 AI 模型
+  - Google Colab 作为开发环境
+  - Prompt Template 设计系统提示词
+- 代码实现关键点
+  - Pipeline 的创建和使用
+  - API 调用方法
+  - 文件处理（音频文件的保存和转换）
+
+## 扩展知识（关键词解释）
+- LangChain：一个强大的 AI 开发框架，专门用于将多个 AI 模型和工具连接在一起，让开发者能够轻松构建复杂的 AI 应用流程。
+- Prompt Template：一种用于构建 AI 模型输入的标准化模板系统，帮助开发者创建结构化的提示词，确保 AI 模型能够产生期望的输出结果。
+- Pipeline：Transformers 库中的核心功能，将复杂的 AI 任务（如文本分类、图像识别等）封装成简单的接口，使开发者无需深入了解底层实现就能快速使用 AI 模型。
+- API Token：访问 AI 服务（如 Hugging Face、OpenAI）的身份凭证，用于验证用户身份并控制访问权限，确保服务的安全使用。
+- Colab：Google 提供的免费云端开发环境，内置支持 Python 和常用的 AI 框架，并提供 GPU 资源，特别适合 AI 项目的开发和测试。
+- 模型托管：Hugging Face 提供的在线模型部署服务，允许开发者直接使用或部署预训练模型，简化了 AI 模型的使用和集成过程。

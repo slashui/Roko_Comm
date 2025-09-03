@@ -1,0 +1,101 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AliPlayer</title>
+  <link rel="stylesheet" href="//g.alicdn.com/de/prismplayer/2.15.6/skins/default/aliplayer-min.css" />
+  <script type="text/javascript" src="//g.alicdn.com/de/prismplayer/2.15.6/aliplayer-min.js"></script>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+    .prism-player {
+      width: 100%;
+      height: 100%;
+    }
+    .error-message {
+      color: red;
+      padding: 20px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="prism-player" id="J_prismPlayer"></div>
+  <script>
+    async function initPlayer() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const vid = urlParams.get('vid');
+  
+  if (!vid) {
+    showError('视频 ID 不能为空');
+    return;
+  }
+
+  try {
+    console.log('Fetching playauth for vid:', vid);
+    const response = await fetch(`/api/vod/playauth?vid=${vid}`);
+    const data = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(`API Error (${response.status}): ${data.error}\nCode: ${data.code}\nRequestId: ${data.requestId}`);
+    }
+
+    if (!data.playauth) {
+      throw new Error('No playauth received from API');
+    }
+
+    console.log('Initializing player with:', {
+      vid: vid,
+      playauth: data.playauth ? '***exists***' : 'missing',
+      videoMeta: data.videoMeta
+    });
+
+    new Aliplayer({
+      id: "J_prismPlayer",
+      vid: vid,
+      playauth: data.playauth,
+      width: "100%",
+      height: "100%",
+      autoplay: false,
+      isLive: false,
+      rePlay: false,
+      playsinline: true,
+      preload: true,
+      controlBarVisibility: 'hover',
+      useH5Prism: true,
+      license: {
+            domain: "oneday.build", 
+            key: "jPKPh2rgM1JwNPouC4cdf24cfb58c4718940847adf27268e3" 
+          }
+    });
+  } catch (error) {
+    console.error('Player initialization failed:', error);
+    showError(`初始化失败: ${error.message}`);
+  }
+}
+
+function showError(message) {
+  const errorHtml = `
+    <div class="error-message">
+      <h3>错误信息</h3>
+      <pre>${message}</pre>
+    </div>
+  `;
+  document.getElementById('J_prismPlayer').innerHTML = errorHtml;
+}
+
+    function showError(message) {
+      document.getElementById('J_prismPlayer').innerHTML = 
+        `<div class="error-message">${message}</div>`;
+    }
+
+    initPlayer();
+  </script>
+</body>
+</html>

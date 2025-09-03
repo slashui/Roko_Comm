@@ -1,0 +1,126 @@
+{
+  "title": "和果子制作美学课程",
+  "chapters": [
+    {
+      "id": "chapter1",
+      "title": "和果子基础入门",
+      "description": "掌握和果子基础知识和简单制作技法",
+      "status": "completed",
+      "requiredRole": "PRIME",
+      "lessons": [
+        {
+          "title": "课程导入 - 练切类和果子的美学特点",
+          "duration": "30分钟",
+          "url": "/cn/course/chapter1/lesson1",
+          "previewUrl": "/cn/demo/lesson1",
+          "isPreview": true,
+          "requiredRole": "VIP",
+          "videoUrl": "https://customer-0e422c62fd0877137d57cead3f42415f.cloudflarestream.com/8f7ecafdc93a4db48c188ea30006f2be/manifest/video.m3u8",
+          "streamId": "8f7ecafdc93a4db48c188ea30006f2be",
+          "thumbnail": "https://customer-0e422c62fd0877137d57cead3f42415f.cloudflarestream.com/8f7ecafdc93a4db48c188ea30006f2be/thumbnails/thumbnail.jpg"
+        },
+        {
+          "title": "原料知识 - 白豆沙、红豆沙等主要原料",
+          "duration": "45分钟",
+          "url": "/cn/course/chapter1/lesson2",
+          "requiredRole": "prime",
+          "videoUrl": "https://customer-0e422c62fd0877137d57cead3f42415f.cloudflarestream.com/25b91bbab28d48a8a6afb03bd8e589a1/manifest/video.m3u8",
+          "streamId": "25b91bbab28d48a8a6afb03bd8e589a1",
+          "thumbnail": "https://customer-0e422c62fd0877137d57cead3f42415f.cloudflarestream.com/25b91bbab28d48a8a6afb03bd8e589a1/thumbnails/thumbnail.jpg"
+        },
+        {
+          "title": "基础工具与环境 - 必需工具清单与使用",
+          "duration": "30分钟",
+          "url": "/cn/course/chapter1/lesson3",
+          "requiredRole": "prime"
+        },
+        {
+          "title": "基础配方与工艺 - 练切皮制作流程",
+          "duration": "90分钟",
+          "url": "/cn/course/chapter1/lesson4",
+          "requiredRole": "vip"
+        },
+        {
+          "title": "初学者作品 - 樱花、梅花练切制作",
+          "duration": "120分钟",
+          "url": "/cn/course/chapter1/lesson5",
+          "requiredRole": "vip"
+        }
+      ]
+    },
+    {
+      "id": "chapter2",
+      "title": "进阶技法与造型",
+      "description": "掌握稳定皮配方、精细造型技法与色彩过渡",
+      "status": "completed",
+      "requiredRole": "PRIME",
+      "lessons": [
+        {
+          "title": "练切皮稳定版与保湿公式",
+          "duration": "60分钟",
+          "url": "/cn/course/chapter2/lesson1",
+          "isPreview": true,
+          "requiredRole": "vip"
+        },
+        {
+          "title": "色彩与渐变技巧 - 调色原则与搭配",
+          "duration": "90分钟",
+          "url": "/cn/course/chapter2/lesson2",
+          "requiredRole": "vip"
+        },
+        {
+          "title": "造型技法进阶 - 立体花型制作",
+          "duration": "150分钟",
+          "url": "/cn/course/chapter2/lesson3",
+          "requiredRole": "prime"
+        },
+        {
+          "title": "细节与质感表现 - 刀纹控制技巧",
+          "duration": "90分钟",
+          "url": "/cn/course/chapter2/lesson4",
+          "requiredRole": "prime"
+        }
+      ]
+    },
+    {
+      "id": "chapter3",
+      "title": "综合创作与作品呈现",
+      "description": "独立创作主题系列果子，商业或展示呈现",
+      "status": "completed",
+      "requiredRole": "VIP",
+      "lessons": [
+        {
+          "title": "主题创作思路 - 季节节气主题设计",
+          "duration": "90分钟",
+          "url": "/cn/course/chapter3/lesson1",
+          "isPreview": true,
+          "requiredRole": "vip"
+        },
+        {
+          "title": "成品组合与摆盘 - 传统摆盘美学",
+          "duration": "120分钟",
+          "url": "/cn/course/chapter3/lesson2",
+          "requiredRole": "vip"
+        },
+        {
+          "title": "作品拍摄与展示 - 光线与背景布置",
+          "duration": "90分钟",
+          "url": "/cn/course/chapter3/lesson3",
+          "requiredRole": "vip"
+        },
+        {
+          "title": "保湿与运输 - 商业外卖与礼盒处理",
+          "duration": "60分钟",
+          "url": "/cn/course/chapter3/lesson4",
+          "requiredRole": "vip"
+        },
+        {
+          "title": "主题系列创作 - 综合技法应用",
+          "duration": "180分钟",
+          "url": "/cn/course/chapter3/lesson5",
+          "requiredRole": "vip"
+        }
+      ]
+    }
+  ]
+}
