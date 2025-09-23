@@ -33,6 +33,13 @@ const Home = () => {
       unit_amount: 59900,
       bgColor: 'bg-gradient-to-r from-purple-400 to-pink-400',
       originalPrice: '899'
+    },
+    {
+      id: 3,
+      product: { name: "专业版" },
+      unit_amount: 99900,
+      bgColor: 'bg-gradient-to-r from-blue-400 to-purple-400',
+      originalPrice: '1299'
     }
   ];
   console.log('Price Cards:', priceCards);
@@ -50,10 +57,7 @@ const Home = () => {
 
       if (response && response.data) {
         // 对价格进行排序，让 199 显示在前面
-        const sortedPrices = {
-          ...response.data,
-          prices: response.data.prices?.sort((a, b) => a.unit_amount - b.unit_amount)
-        };
+        const sortedPrices = response.data.sort((a, b) => a.unit_amount - b.unit_amount);
         setPrices(sortedPrices);
       } else {
         console.error("Missing data in response");
@@ -208,13 +212,12 @@ const Home = () => {
     </div>
     <div className="w-full sm:w-1/2 pt-10 order-2">  {/* 修改这里的 order-1 为 order-2 */}
     
-// 在 map 函数中添加日志
-{priceCards.map((price, index) => (
+{(prices.length > 0 ? prices : priceCards).map((price, index) => (
         <FrontPriceCard 
           key={price.id}
           price={price}
-          bgColor={price.bgColor}
-          originalPrice={price.originalPrice}
+          bgColor={price.bgColor || (index === 0 ? 'bg-gradient-to-r from-pink-400 to-purple-400' : index === 1 ? 'bg-gradient-to-r from-purple-400 to-pink-400' : 'bg-gradient-to-r from-blue-400 to-purple-400')}
+          originalPrice={price.originalPrice || (price.unit_amount > 50000 ? '1299' : price.unit_amount > 30000 ? '899' : '299')}
         />
       ))}
     </div>

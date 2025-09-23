@@ -34,26 +34,28 @@ export default function Register() {
     const registerUser = async (e) => {
         e.preventDefault()
         
-        // 验证邀请码
-        if (!data.inviteCode.trim()) {
-            toast.error('请输入邀请码');
-            return;
+        // 邀请码验证（可选）
+        if (data.inviteCode.trim()) {
+            // 如果提供了邀请码，则验证它
+            try {
+                const verifyResponse = await axios.post('/api/invite-codes/verify', {
+                    code: data.inviteCode
+                });
+                
+                if (!verifyResponse.data.valid) {
+                    toast.error(verifyResponse.data.error || '邀请码验证失败');
+                    return;
+                }
+            } catch (error) {
+                toast.error('邀请码验证失败');
+                return;
+            }
         }
         
         if (isLoading) return; // 防止重复提交
         
         setIsLoading(true)
         try {
-            // 先验证邀请码
-            const verifyResponse = await axios.post('/api/invite-codes/verify', {
-                code: data.inviteCode
-            });
-            
-            if (!verifyResponse.data.valid) {
-                toast.error(verifyResponse.data.error || '邀请码验证失败');
-                return;
-            }
-            
             const registerData = {
                 ...data,
                 name: 'user_' + Math.random().toString(36).substr(2, 8), // 生成随机用户名
@@ -138,17 +140,16 @@ export default function Register() {
 
                                 <div>
                                     <label className="text-gray-700 font-medium block mb-2">
-                                        邀请码
+                                        邀请码 <span className="text-gray-500 text-sm">(可选)</span>
                                     </label>
                                     <input
                                         id="inviteCode"
                                         name="inviteCode"
                                         type="text"
-                                        required
                                         value={data.inviteCode}
-                                        onChange={e => setData({ ...data, inviteCode: e.target.value })}
-                                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#845eee]/50 focus:border-[#845eee] outline-none transition-all"
-                                        placeholder="请输入邀请码"
+                        onChange={e => setData({ ...data, inviteCode: e.target.value })}
+                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#845eee]/50 focus:border-[#845eee] outline-none transition-all"
+                        placeholder="请输入邀请码（可选）"
                                     />
                                 </div>
 

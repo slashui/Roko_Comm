@@ -25,7 +25,7 @@ export async function POST(request){
 
     // 验证邀请码（如果提供）
     let inviteCodeData = null;
-    if (inviteCode) {
+    if (inviteCode && inviteCode.trim()) {
         const codeToSearch = inviteCode.trim().toUpperCase();
         inviteCodeData = await prisma.inviteCode.findUnique({
             where: { code: codeToSearch },

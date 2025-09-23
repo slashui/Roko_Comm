@@ -18,7 +18,7 @@ export async function GET(request) {
     console.log('Using Stripe key:', process.env.STRIPE_SECRET_KEY?.slice(0, 8) + '...');
     
     const session = await stripe.checkout.sessions.retrieve(sessionId, {
-      expand: ['customer', 'line_items', 'payment_intent']
+      expand: ['customer', 'line_items', 'line_items.data.price.product', 'payment_intent']
     });
     
     console.log('Session retrieved successfully');

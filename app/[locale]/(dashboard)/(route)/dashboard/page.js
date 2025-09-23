@@ -1,21 +1,18 @@
 'use client'
-import Image from 'next/image'
-import { useTranslations } from "next-intl";
 import { useSession, signOut } from 'next-auth/react'
 import Link from 'next/link'
-import CourseList from '@/components/CourseList';
 import { useEffect, useState } from 'react'
 
 export default function Home({ params }) {
-  const t = useTranslations("Dashboard");
   const { data: session, status } = useSession();
   const lang = params.locale;
   const [authorizedCourses, setAuthorizedCourses] = useState([]);
+  const [purchases, setPurchases] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const loadAuthorizedCourses = async () => {
+    const loadDataAndCourses = async () => {
       console.log('=== Session Debug Info ===');
       console.log('Session status:', status);
       console.log('Full session object:', session);
@@ -24,38 +21,55 @@ export default function Home({ params }) {
       console.log('Session user email:', session?.user?.email);
       
       if (!session?.user?.id) {
-        console.log('No user ID found in session, stopping course fetch');
+        console.log('No user ID found in session, stopping fetch');
         setLoading(false);
         return;
       }
 
       try {
         setLoading(true);
-        console.log('Fetching courses for userId:', session.user.id);
-        const response = await fetch(`/api/user-courses?userId=${session.user.id}`);
-        console.log('API response status:', response.status);
         
-        if (response.ok) {
-          const userCourses = await response.json();
+        const [coursesResponse, purchasesResponse] = await Promise.all([
+          fetch(`/api/user-courses?userId=${session.user.id}`),
+          fetch('/api/user/purchases')
+        ]);
+        
+        if (coursesResponse.ok) {
+          const userCourses = await coursesResponse.json();
           console.log('Received user courses:', userCourses);
           setAuthorizedCourses(userCourses);
         } else {
-          const errorText = await response.text();
-          console.error('API error response:', errorText);
-          setError(`获取课程列表失败: ${response.status}`);
+          console.error('API error response:', await coursesResponse.text());
         }
+
+        if (purchasesResponse.ok) {
+          const userPurchases = await purchasesResponse.json();
+          console.log('Received user purchases:', userPurchases);
+          setPurchases(userPurchases);
+        } else {
+          console.error('Purchases API error:', await purchasesResponse.text());
+        }
+        
       } catch (err) {
-        console.error('Error loading authorized courses:', err);
-        setError(`加载课程时出现错误: ${err.message}`);
+        console.error('Error loading data:', err);
+        setError(`加载数据时出现错误: ${err.message}`);
       } finally {
         setLoading(false);
       }
     };
 
     if (status !== 'loading') {
-      loadAuthorizedCourses();
+      loadDataAndCourses();
     }
   }, [session, status]);
+
+  // 货币格式化函数 - 统一显示美元
+  const formatAmount = (amount, currency) => {
+    if (currency === 'USD') {
+      return `$${amount.toFixed(2)}`
+    }
+    return `${currency} ${amount.toFixed(2)}`
+  };
 
   if (loading) {
     return (
@@ -133,6 +147,14 @@ export default function Home({ params }) {
                       {session?.user?.email || 'user@example.com'}
                     </div>
                   </div>
+                  <div className="text-sm">
+                    <Link 
+                      href={`/${lang}/setting/billing`}
+                      className="inline-flex items-center gap-2 text-white/90 hover:text-white transition-colors"
+                    >
+                      💳 <span>查看账单记录</span>
+                    </Link>
+                  </div>
                 </div>
                 <button
                   onClick={() => signOut({ callbackUrl: `/${lang}/login` })}
@@ -193,7 +215,10 @@ export default function Home({ params }) {
                       {userCourse.course.description || '开始您的学习之旅'}
                     </p>
                     <div className="text-xs text-white/70">
-                      授权时间: {new Date(userCourse.grantedAt).toLocaleDateString('zh-CN')}
+                      {userCourse.accessMethod === 'PURCHASED' ? '购买时间' : '授权时间'}: {new Date(userCourse.grantedAt).toLocaleDateString('zh-CN')}
+                    </div>
+                    <div className="text-xs text-white/60">
+                      获得方式: {userCourse.accessMethod === 'PURCHASED' ? '通过购买' : '管理员授权'}
                     </div>
                   </div>
                 </div>
@@ -251,6 +276,61 @@ export default function Home({ params }) {
           ))
         )}
       </div>
+
+      {/* Recent Purchases */}
+      {purchases.length > 0 && (
+        <div className="mt-12 space-y-6">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl md:text-3xl font-bold mb-4" style={{ color: "#4A4A4A" }}>
+              我的购买记录
+            </h2>
+            <p className="text-lg" style={{ color: "#6A6A6A" }}>
+              查看您最近的购买历史
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {purchases.slice(0, 6).map((purchase) => (
+              <div key={purchase.id} className="bg-white rounded-2xl p-6 shadow-md hover:shadow-lg transition-shadow">
+                <div className="flex items-center justify-between mb-4">
+                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                    purchase.status === 'COMPLETED' ? 'bg-green-100 text-green-800' :
+                    purchase.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' :
+                    'bg-red-100 text-red-800'
+                  }`}>
+                    {purchase.status === 'COMPLETED' ? '已完成' : 
+                     purchase.status === 'PENDING' ? '处理中' : '失败'}
+                  </span>
+                  <span className="text-sm text-gray-500">
+                    {new Date(purchase.createdAt).toLocaleDateString('zh-CN')}
+                  </span>
+                </div>
+                <div className="space-y-2">
+                  <div className="font-semibold text-gray-800">
+                    {purchase.productName || '未知产品'}
+                  </div>
+                  <div className="text-lg font-bold text-green-600">
+                    {formatAmount(purchase.amount, purchase.currency)}
+                  </div>
+                  <div className="text-xs text-gray-500">
+                    ID: {purchase.productId.slice(-8)}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="text-center mt-6">
+            <Link 
+              href={`/${lang}/setting/billing`}
+              className="inline-flex items-center px-6 py-3 rounded-full font-medium transition-colors"
+              style={{ backgroundColor: "#7BA05B", color: "white" }}
+            >
+              查看完整账单记录
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* Progress Summary */}
       <div className="mt-12 p-8 rounded-3xl text-center" style={{ backgroundColor: "#F8F5F0" }}>

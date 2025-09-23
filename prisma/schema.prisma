@@ -25,6 +25,7 @@ model User {
   createdInviteCodes InviteCode[] @relation("CreatedInviteCodes")
   usedInviteCodes    InviteCode[]
   userCourses        UserCourse[]
+  purchases          Purchase[]
 }
 
 model Account {
@@ -65,30 +66,74 @@ model orderlist {
   addtime             String?
 }
 
+model Purchase {
+  id              String        @id @default(cuid())
+  userId          String
+  productId       String
+  stripeSessionId String?       @unique
+  stripePriceId   String
+  amount          Float
+  currency        String        @default("CNY")
+  status          PaymentStatus @default(PENDING)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userCourses     UserCourse[]
+}
+
+model ProductCourseMapping {
+  id              String   @id @default(cuid())
+  stripeProductId String   @unique
+  courseId        String   
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  course          Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  
+  @@index([stripeProductId])
+  @@index([courseId])
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+enum CourseAccessMethod {
+  GRANTED    // 通过管理员授权获得
+  PURCHASED  // 通过购买获得
+}
+
 model Course {
-  id                String             @id @default(cuid())
-  title             String
-  description       String?
-  createdAt         DateTime           @default(now())
-  updatedAt         DateTime           @updatedAt
-  category          String?
-  courseId          String             @unique
-  price             Float?
-  status            CourseStatus       @default(DRAFT)
-  thumbnail         String?
-  metadata          Json?              // 存储额外的课程元数据
-  inviteCodeCourses InviteCodeCourse[]
-  userCourses       UserCourse[]
-  chapters          Chapter[]          // 关联章节
+  id                   String                 @id @default(cuid())
+  title                String
+  description          String?
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  category             String?
+  courseId             String                 @unique
+  price                Float?
+  status               CourseStatus           @default(DRAFT)
+  thumbnail            String?
+  metadata             Json?                  // 存储额外的课程元数据
+  inviteCodeCourses    InviteCodeCourse[]
+  userCourses          UserCourse[]
+  chapters             Chapter[]              // 关联章节
+  productCourseMappings ProductCourseMapping[] // 关联产品映射
 }
 
 model UserCourse {
-  id        String   @id @default(cuid())
-  userId    String
-  courseId  String
-  grantedAt DateTime @default(now())
-  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id           String            @id @default(cuid())
+  userId       String
+  courseId     String
+  grantedAt    DateTime          @default(now())
+  accessMethod CourseAccessMethod @default(GRANTED)
+  purchaseId   String?           // 关联购买记录，如果是通过购买获得
+  course       Course            @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  user         User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  purchase     Purchase?         @relation(fields: [purchaseId], references: [id])
 
   @@unique([userId, courseId])
 }

@@ -3,11 +3,18 @@
 import { useTranslations } from "next-intl";
 import FrontNav from "@/components/FrontNav";
 import { Sparkles, Users, BookOpen, MessageCircle, TrendingUp, Target, ArrowRight, Star, Brain, Zap } from "lucide-react";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { usePathname } from 'next/navigation';
 
 export default function Home() {
   const t = useTranslations("Index");
+  const [stripeProducts, setStripeProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const pathname = usePathname();
+  const currentLocale = pathname.split('/')[1] || 'cn';
 
-  const courses = [
+  const fallbackCourses = [
     {
       title: "一人公司的必要知识储备",
       price: "¥99",
@@ -31,6 +38,35 @@ export default function Home() {
       color: "from-orange-400 to-red-400"
     }
   ];
+
+  useEffect(() => {
+    const fetchStripeProducts = async () => {
+      try {
+        const response = await axios.get('/api/stripe/getproducts');
+        if (response.data && response.data.length > 0) {
+          const productsWithMetadata = response.data.map((price, index) => ({
+            id: price.id,
+            title: price.product.name || fallbackCourses[index]?.title || `课程 ${index + 1}`,
+            price: `¥${(price.unit_amount / 100).toFixed(0)}`,
+            description: price.product.description || fallbackCourses[index]?.description || "课程描述",
+            features: fallbackCourses[index]?.features || ["课程内容", "学习资料", "在线支持"],
+            color: fallbackCourses[index]?.color || "from-purple-400 to-pink-400",
+            popular: index === 1,
+            stripeData: price
+          }));
+          setStripeProducts(productsWithMetadata);
+        }
+      } catch (error) {
+        console.error('获取Stripe产品失败:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStripeProducts();
+  }, []);
+
+  const courses = stripeProducts.length > 0 ? stripeProducts : fallbackCourses;
 
   const communityFeatures = [
     {
@@ -130,7 +166,37 @@ export default function Home() {
                       </li>
                     ))}
                   </ul>
-                  <button className={`w-full bg-gradient-to-r ${course.color} text-white py-3 rounded-full font-semibold hover:shadow-lg transition-all duration-300`}>
+                  <button 
+                    onClick={async (e) => {
+                      if (course.stripeData) {
+                        e.preventDefault();
+                        try {
+                          e.target.disabled = true;
+                          e.target.textContent = '处理中...';
+                          
+                          const {data} = await axios.post('/api/stripe/payment', {
+                            priceId: course.stripeData.id
+                          });
+                          
+                          if (data) {
+                            window.location.assign(data);
+                          }
+                        } catch (error) {
+                          console.error('Payment error:', error);
+                          e.target.disabled = false;
+                          e.target.textContent = '立即购买';
+                          
+                          if (error.response?.status === 401) {
+                            alert('请先登录后再进行购买');
+                            window.location.href = `/${currentLocale}/login`;
+                          } else {
+                            alert('支付请求失败: ' + (error.response?.data?.error || error.message));
+                          }
+                        }
+                      }
+                    }}
+                    className={`w-full bg-gradient-to-r ${course.color} text-white py-3 rounded-full font-semibold hover:shadow-lg transition-all duration-300 disabled:opacity-50`}
+                  >
                     立即购买
                   </button>
                 </div>

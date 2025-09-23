@@ -3,6 +3,7 @@ import axios from 'axios'
 import Link from 'next/link'
 import { useState, useEffect } from 'react';
 import { useTranslations } from "next-intl";
+import { usePathname } from 'next/navigation';
 
 
 /**
@@ -15,6 +16,8 @@ import { useTranslations } from "next-intl";
 const PricingCard = ({price,bgColor, originalPrice}) => {
   const [theme, setTheme] = useState('light');
   const t = useTranslations("Landing");
+  const pathname = usePathname();
+  const currentLocale = pathname.split('/')[1] || 'cn';
 
   useEffect(() => {
     const htmlClass = document.documentElement.className;
@@ -24,18 +27,59 @@ const PricingCard = ({price,bgColor, originalPrice}) => {
 
 
     const handleClick = async (e) => {
+      console.log('Button clicked! Price data:', price);
       e.preventDefault();
-      const {data} = await axios.post('/api/stripe/payment', 
-      {
-        priceId: price.id
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json'
+      
+      try {
+        // 显示加载状态
+        e.target.disabled = true;
+        e.target.textContent = '处理中...';
+        
+        console.log('Sending payment request with priceId:', price.id);
+        const {data} = await axios.post('/api/stripe/payment', 
+        {
+          priceId: price.id
         },
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        }
+        );
+        
+        console.log('Payment response:', data);
+        
+        if (data) {
+          window.location.assign(data);
+        } else {
+          throw new Error('支付链接获取失败');
+        }
+      } catch (error) {
+        console.error('Payment error:', error);
+        
+        if (error.response) {
+          console.error('Error response:', error.response.data);
+          console.error('Error status:', error.response.status);
+        }
+        
+        // 恢复按钮状态
+        e.target.disabled = false;
+        e.target.textContent = '立即购买';
+        
+        // 显示错误信息
+         if (error.response?.status === 401) {
+           const errorData = error.response.data;
+           alert(errorData.error || '请先登录后再进行购买');
+           // 重定向到登录页面
+           if (errorData.redirect) {
+             window.location.href = `/${currentLocale}${errorData.redirect}`;
+           } else {
+             window.location.href = `/${currentLocale}/login`;
+           }
+         } else {
+           alert('支付请求失败，请稍后重试: ' + (error.response?.data?.error || error.message));
+         }
       }
-      );
-      window.location.assign(data)
     }
    
 

@@ -38,7 +38,27 @@ useEffect(() => {
       
       if (sessionData.customer_details) {
         const productPrice = sessionData.amount_total ? sessionData.amount_total / 100 : 99;
-        const productName = sessionData.description || '洛克AI编程实战课';
+        
+        // 从line_items中获取正确的产品名称
+        let productName = '洛克AI编程实战课'; // 默认值
+        if (sessionData.line_items && sessionData.line_items.data && sessionData.line_items.data.length > 0) {
+          const lineItem = sessionData.line_items.data[0];
+          if (lineItem.price && lineItem.price.product) {
+            // 如果product是对象，直接获取name
+            if (typeof lineItem.price.product === 'object') {
+              productName = lineItem.price.product.name || productName;
+            }
+          }
+          // 如果没有获取到产品名称，尝试从description获取
+          if (productName === '洛克AI编程实战课' && lineItem.description) {
+            productName = lineItem.description;
+          }
+        }
+        // 最后尝试从session的description获取
+        if (productName === '洛克AI编程实战课' && sessionData.description) {
+          productName = sessionData.description;
+        }
+        
         const email = sessionData.customer_details?.email;
         const name = sessionData.customer_details?.name;
         
@@ -216,7 +236,7 @@ useEffect(() => {
         <div className="w-8 h-8 bg-yellow-500 rounded-lg flex items-center justify-center">
           <span className="text-white text-lg">📖</span>
         </div>
-        <span className="text-lg font-medium">洛克AI编程实战课（预售）</span>
+        <span className="text-lg font-medium">{orderData?.productName || '洛克AI实战营'}</span>
         
         
   {console.log('渲染时的订单数据:', orderData)} {/* 添加调试日志 */}
@@ -235,15 +255,21 @@ useEffect(() => {
           </p>
           
           <div className="mt-6 flex gap-4 ">
-            <a 
-              href={`/cn/z?email=${encodeURIComponent(orderData?.email || '')}&role=${orderData?.userRole || 'PRIME'}`}
-              className="bg-[#845eee] text-white px-6 py-2 rounded-lg hover:bg-opacity-90 inline-block"
-            >
-              创建新账户
-            </a>
-           
-         
-       
+            {session?.user ? (
+              <a 
+                href="/dashboard"
+                className="bg-[#845eee] text-white px-6 py-2 rounded-lg hover:bg-opacity-90 inline-block"
+              >
+                去主页学习
+              </a>
+            ) : (
+              <a 
+                href={`/cn/z?email=${encodeURIComponent(orderData?.email || '')}&role=${orderData?.userRole || 'PRIME'}`}
+                className="bg-[#845eee] text-white px-6 py-2 rounded-lg hover:bg-opacity-90 inline-block"
+              >
+                创建新账户
+              </a>
+            )}
       </div>
        </div>
        <div className='w-1/3'>
