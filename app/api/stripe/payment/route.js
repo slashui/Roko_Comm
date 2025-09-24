@@ -81,11 +81,11 @@ export async function POST(request) {
                 userId: userId || 'guest'
             },
             mode: 'payment',
-            success_url: `http://localhost:3001/${preferredLocale}/checkout/success?session_id={CHECKOUT_SESSION_ID}&price_id=${priceId}`,
-            cancel_url: `http://localhost:3001/$${preferredLocale}/checkout/cancel`,
+            success_url: `https://roko.oneday.build/${preferredLocale}/checkout/success?session_id={CHECKOUT_SESSION_ID}&price_id=${priceId}`,
+            cancel_url: `https://roko.oneday.build/${preferredLocale}/checkout/cancel`,
         
-            // success_url: `https://course.oneday.build/${preferredLocale}/checkout/success?session_id={CHECKOUT_SESSION_ID}&price_id=${priceId}`,
-            // cancel_url: `https://course.oneday.build/${preferredLocale}/checkout/cancel`,
+            // success_url: `http://localhost:3001/${preferredLocale}/checkout/success?session_id={CHECKOUT_SESSION_ID}&price_id=${priceId}`,
+            // cancel_url: `http://localhost:3001/${preferredLocale}/checkout/cancel`,
         });
         console.log('Stripe session created:', stripeSession.id);
 
