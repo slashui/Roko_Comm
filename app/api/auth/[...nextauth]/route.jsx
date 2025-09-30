@@ -89,6 +89,32 @@ export const authOptions = {
         error: '/login' // 修改为实际存在的路径
     },
     callbacks: {
+        async signIn({ user, account, profile }) {
+            // 在用户成功登录后，自动检查并认领待认领的购买记录
+            if (user?.email) {
+                try {
+                    const response = await fetch(`${process.env.NEXTAUTH_URL}/api/user/claim-purchases`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ 
+                            userId: user.id,
+                            email: user.email 
+                        }),
+                    });
+                    
+                    if (response.ok) {
+                        const result = await response.json();
+                        console.log('Auto-claim result:', result);
+                    }
+                } catch (error) {
+                    console.error('Auto-claim error:', error);
+                    // 不阻止登录流程，即使认领失败
+                }
+            }
+            return true;
+        },
         async jwt({ token, user }) {
             if (user) {
                 token.id = user.id;

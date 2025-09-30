@@ -81,11 +81,11 @@ export async function POST(request) {
                 userId: userId || 'guest'
             },
             mode: 'payment',
-            success_url: `https://roko.oneday.build/${preferredLocale}/checkout/success?session_id={CHECKOUT_SESSION_ID}&price_id=${priceId}`,
-            cancel_url: `https://roko.oneday.build/${preferredLocale}/checkout/cancel`,
+            // success_url: `https://roko.oneday.build/${preferredLocale}/checkout/success?session_id={CHECKOUT_SESSION_ID}&price_id=${priceId}`,
+            // cancel_url: `https://roko.oneday.build/${preferredLocale}/checkout/cancel`,
         
-            // success_url: `http://localhost:3001/${preferredLocale}/checkout/success?session_id={CHECKOUT_SESSION_ID}&price_id=${priceId}`,
-            // cancel_url: `http://localhost:3001/${preferredLocale}/checkout/cancel`,
+            success_url: `http://localhost:3000/${preferredLocale}/checkout/success?session_id={CHECKOUT_SESSION_ID}&price_id=${priceId}`,
+            cancel_url: `http://localhost:3000/${preferredLocale}/checkout/cancel`,
         });
         console.log('Stripe session created:', stripeSession.id);
 
@@ -98,9 +98,17 @@ export async function POST(request) {
         // 只有登录用户才创建购买记录，游客用户在支付成功后再处理
         if (userId) {
             console.log('Creating purchase record...');
+
+            // 获取用户邮箱
+            const user = await prisma.user.findUnique({
+                where: { id: userId },
+                select: { email: true }
+            });
+
             const purchase = await prisma.purchase.create({
                 data: {
                     userId: userId,
+                    customerEmail: user?.email,
                     productId: price.product.id,
                     stripeSessionId: stripeSession.id,
                     stripePriceId: priceId,

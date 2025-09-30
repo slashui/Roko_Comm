@@ -27,31 +27,45 @@ export async function POST(req) {
       const userId = session.metadata?.userId;
       
       if (userId === 'guest') {
-        // 游客用户支付成功，需要提示注册
-        console.log('Guest payment completed, need to handle registration');
+        // 游客用户支付成功，创建待认领的购买记录
+        console.log('Guest payment completed, creating pending claim record');
         
         // 获取价格信息
         const priceId = session.metadata?.priceId;
-        if (priceId) {
+        const customerEmail = session.customer_details?.email;
+        
+        if (priceId && customerEmail) {
           const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
           const price = await stripe.prices.retrieve(priceId, {
             expand: ['product']
           });
           
-          // 保存临时购买记录（没有用户ID）
-          await prisma.purchase.create({
-            data: {
-              userId: 'guest_' + session.id,
-              productId: price.product.id,
-              stripeSessionId: session.id,
-              stripePriceId: priceId,
-              amount: price.unit_amount / 100,
-              currency: price.currency.toUpperCase(),
-              status: 'COMPLETED'
-            }
+          // 检查是否已存在该session的购买记录
+          const existingPurchase = await prisma.purchase.findUnique({
+            where: { stripeSessionId: session.id }
           });
           
-          console.log('Guest purchase record created for session:', session.id);
+          if (!existingPurchase) {
+            // 创建待认领的购买记录
+            await prisma.purchase.create({
+              data: {
+                userId: null, // 游客购买，暂时没有用户ID
+                customerEmail: customerEmail,
+                productId: price.product.id,
+                stripeSessionId: session.id,
+                stripePriceId: priceId,
+                amount: price.unit_amount / 100,
+                currency: price.currency.toUpperCase(),
+                status: 'PENDING_CLAIM' // 待认领状态
+              }
+            });
+            
+            console.log('Guest purchase record created for session:', session.id, 'email:', customerEmail);
+          } else {
+            console.log('Purchase record already exists for session:', session.id);
+          }
+        } else {
+          console.error('Missing priceId or customerEmail for guest purchase');
         }
       } else {
         // 已登录用户支付

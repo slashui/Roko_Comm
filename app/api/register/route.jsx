@@ -134,6 +134,59 @@ export async function POST(request){
                 }
             }
 
+            // 自动认领该邮箱的购买记录
+            const pendingPurchases = await tx.purchase.findMany({
+                where: {
+                    customerEmail: email,
+                    status: {
+                        in: ['COMPLETED', 'PENDING_CLAIM']
+                    },
+                    userId: null
+                }
+            });
+
+            // 处理待认领的购买记录
+            for (const purchase of pendingPurchases) {
+                // 获取产品课程映射
+                const productMapping = await tx.productCourseMapping.findUnique({
+                    where: { stripeProductId: purchase.productId },
+                    include: { course: true }
+                });
+
+                if (productMapping) {
+                    // 更新购买记录
+                    await tx.purchase.update({
+                        where: { id: purchase.id },
+                        data: {
+                            userId: user.id,
+                            status: 'COMPLETED'
+                        }
+                    });
+
+                    // 检查是否已有课程权限
+                    const existingAccess = await tx.userCourse.findUnique({
+                        where: {
+                            userId_courseId: {
+                                userId: user.id,
+                                courseId: productMapping.courseId
+                            }
+                        }
+                    });
+
+                    if (!existingAccess) {
+                        // 创建课程访问权限
+                        await tx.userCourse.create({
+                            data: {
+                                userId: user.id,
+                                courseId: productMapping.courseId,
+                                accessMethod: 'PURCHASED',
+                                purchaseId: purchase.id
+                            }
+                        });
+                    }
+                }
+            }
+
             return user;
         });
 

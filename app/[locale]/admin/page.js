@@ -334,6 +334,9 @@ export default function AdminDashboard() {
             setExpandedChapters(new Set([data[0].fileSystemStructure.chapters[0].chapterNumber]))
           }
         }
+      } else {
+        console.error('Failed to fetch courses:', response.status)
+        showToast('获取课程数据失败', 'error')
       }
     } catch (error) {
       console.error('Error updating courses data:', error)
@@ -348,6 +351,8 @@ export default function AdminDashboard() {
   useEffect(() => {
     if (status === 'authenticated') {
       updateCoursesData(false)
+    } else if (status === 'unauthenticated') {
+      setLoading(false)
     }
   }, [status])
 
